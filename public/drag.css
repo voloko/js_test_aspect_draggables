@@ -1,0 +1,24 @@
+.environment
+{
+    margin: 20px;
+    height: 600px;
+    border: 1px dotted #ccc;
+}
+
+.draggable
+{
+    width: 100px;
+    height: 100px;
+    background: #666;
+    color:#FFF;
+    line-height: 100px;
+    text-align: center;
+    font-family: sans-serif;
+    float: left;
+    margin-left: 2px;
+}
+
+.draggable_other
+{
+    background: #396;
+}

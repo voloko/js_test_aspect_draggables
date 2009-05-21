@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Aspect Event Test</title>
+  <link rel="stylesheet" type="text/css" href="drag.css" />
+  <script src="prototype.js"></script>
+  <script src="aspect.js"></script>
+  <script src="application.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    Event.observe(document, 'dom:loaded', function() {
+        new Draggable($$(".draggable")[0], {containement: $$('.environment')[0]});
+    })
+  </script>
+</head>
+<body>
+  <div class="environment">
+      <div class="draggable">draggable</div>
+      <div class="draggable draggable_other">fixed</div>
+  </div>
+</body>
+</html>
