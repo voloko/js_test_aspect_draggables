@@ -58,16 +58,16 @@ var Aspect = new function() {
 
     function wrapMethod(obj, selector, wrapper) {
         var wrapperDescription = getWrapperDescription(selector),
-            method, runBefore = false;
+            method;
 
         method = obj[wrapperDescription.methodName] = getWrappableMethod(obj, wrapperDescription.methodName);
         if (!method.__wrappers) {
             method = obj[wrapperDescription.methodName] = createInterceptor(method);
         };
-        if (wrapperDescription.runBefore) {
-            method.__wrappers.before = [wrapper].concat(method.__wrappers.before);
-        } else {
+        if (wrapperDescription.type == 'after') {
             method.__wrappers.after.push(wrapper);
+        } else {
+            method.__wrappers[wrapperDescription.type] = [wrapper].concat(method.__wrappers[wrapperDescription.type]);
         }
     }
 
@@ -75,16 +75,15 @@ var Aspect = new function() {
         var wrapperDescription = getWrapperDescription(selector),
             method = getWrappableMethod(obj, wrapperDescription.methodName),
             wrappers = method.__wrappers;
-        wrappers.before = without(wrappers.before, wrapper);
-        wrappers.after  = without(wrappers.after, wrapper);
+        wrappers[wrapperDescription.type] = without(wrappers[wrapperDescription.type], wrapper);
         obj[wrapperDescription.methodName] = method;
     }
 
     function getWrapperDescription(selector) {
-        var match = selector.match(/^((after|before) )?(.*)$/);
+        var match = selector.match(/^(after|before|replace) (.*)$/);
         return {
-            runBefore: !match || match[2] != "after",
-            methodName: match ? match[3] : selector
+            type: (match ? match[1] : 'replace'),
+            methodName: match ? match[2] : selector
         }
     }
 
@@ -106,7 +105,8 @@ var Aspect = new function() {
                     throw e 
                 }
             }
-            var result = interceptor.__wrappers.method.apply(this, arguments);
+            var method = interceptor.__wrappers.replace.length ? interceptor.__wrappers.replace[0] : interceptor.__wrappers.method,
+                result = method.apply(this, arguments);
 
             for (items = interceptor.__wrappers.after, l = items.length, i = 0; i < l; i++) {
                 try { 
@@ -120,6 +120,7 @@ var Aspect = new function() {
         interceptor.__wrappers = {
             before: [],
             after: [],
+            replace: [],
             method: method
         }
         return interceptor;
