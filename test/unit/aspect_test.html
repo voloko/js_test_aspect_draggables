@@ -30,7 +30,7 @@ new Test.Unit.Runner({
             f: function() { executed.push('original') }
         });
         Aspect.add(Cls.prototype, 'test', {
-            f: function() { executed.push('aspect'); }
+            "before f": function() { executed.push('aspect'); }
         });
 
         var x = new Cls();
@@ -59,7 +59,7 @@ new Test.Unit.Runner({
             f: function() { executed.push('original') }
         });
         Aspect.add(Cls.prototype, 'test', {
-            f: function() { executed.push('aspect'); }
+            "before f": function() { executed.push('aspect'); }
         });
         Aspect.remove(Cls.prototype, 'test');
 
@@ -74,7 +74,7 @@ new Test.Unit.Runner({
             f: function() { executed.push('original') }
         });
         Aspect.add(Cls.prototype, 'test', {
-            f: function() { executed.push('aspect'); }
+            "before f": function() { executed.push('aspect'); }
         });
 
         var x = new Cls();
@@ -89,7 +89,7 @@ new Test.Unit.Runner({
             f: function() { executed.push('original') }
         });
         Aspect.add(Cls.prototype, 'test', {
-            f: function() { executed.push('aspect'); }
+            "before f": function() { executed.push('aspect'); }
         });
     
         var x = new Cls();
@@ -105,12 +105,12 @@ new Test.Unit.Runner({
             f: function() { executed.push('original') }
         });
         Aspect.add(Cls.prototype, 'test', {
-            f: function() { executed.push('aspect'); }
+            "before f": function() { executed.push('aspect'); }
         });
     
         var x = new Cls();
         Aspect.add(x, 'test', {
-            f: function() { executed.push('replaced'); }
+            "before f": function() { executed.push('replaced'); }
         });
         x.f();
         this.assertEqual(['replaced', 'original'].join(','), executed.join(','))
@@ -131,6 +131,34 @@ new Test.Unit.Runner({
         var x = new Cls();
         x.f();
         this.assertEqual(['1', '2', 'original'].join(','), executed.join(','))
+    },
+    
+    test_should_add_functions: function() {
+        var executed = [];
+        var Cls = Class.create({
+            f: function() { executed.push('original') }
+        });
+        Aspect.add(Cls.prototype, 'test', {
+            f1: function() {
+                this.f();
+                return 1;
+            }
+        });
+        var x = new Cls();
+        this.assertEqual(1, x.f1())
+    },
+    
+    test_should_remove_replace_functions: function() {
+        var executed = [];
+        var Cls = Class.create({
+            f: function() { return 1 }
+        });
+        Aspect.add(Cls.prototype, 'test', {
+            f: function() { return 2 }
+        });
+        var x = new Cls();
+        Aspect.remove(x, 'test')
+        this.assertEqual(1, x.f())
     }
     
 }, "testlog");
